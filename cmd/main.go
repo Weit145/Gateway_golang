@@ -7,9 +7,10 @@ import (
 	"time"
 
 	"github.com/Weit145/GATEWAY_golang/internal/config"
+	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/confirm"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/registration"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/logger"
-	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi"
 )
 
 func main() {
@@ -25,6 +26,7 @@ func main() {
 
 	router.Route("/registration", func(r chi.Router) {
 		r.Post("/", registration.New(log))
+		r.Get("/confirm/{token}", confirm.New(log))
 	})
 
 	srv := &http.Server{

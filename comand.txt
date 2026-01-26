@@ -10,3 +10,5 @@ curl -u myuser:mypassword
 
 
 go test ./internal/http-server/handler/registration -v
+
+go test ./internal/http-server/handler/confirm -v
