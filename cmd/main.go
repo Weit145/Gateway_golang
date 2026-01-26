@@ -2,9 +2,13 @@ package main
 
 import (
 	"log/slog"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/Weit145/GATEWAY_golang/internal/config"
+	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/registration"
+	"github.com/Weit145/GATEWAY_golang/internal/lib/logger"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -18,6 +22,23 @@ func main() {
 
 	//Init router
 	router := chi.NewRouter()
+
+	router.Route("/registration", func(r chi.Router) {
+		r.Post("/", registration.New(log))
+	})
+
+	srv := &http.Server{
+		Addr:         "localhost:8080",
+		Handler:      router,
+		ReadTimeout:  4 * time.Second,
+		WriteTimeout: 4 * time.Second,
+		IdleTimeout:  30 * time.Second,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("Failed to start HTTP server", logger.Err(err))
+		os.Exit(1)
+	}
 }
 
 func setupLogger(env string) *slog.Logger {

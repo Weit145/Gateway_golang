@@ -1,3 +1,12 @@
 go generate ./...
 
 go mod tidy
+
+
+curl -u myuser:mypassword      
+    -X POST http://localhost:8080/registration      
+    -H "Content-Type: application/json"      
+    -d '{"email": "user@example.com"}'
+
+
+go test ./internal/http-server/handler/registration -v
