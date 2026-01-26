@@ -10,6 +10,5 @@ curl -u myuser:mypassword
 
 curl http://localhost:8080/registration/confirm/sfdsdf
 
-
 go test ./internal/http-server/handler/registration -v
 go test ./internal/http-server/handler/confirm -v
