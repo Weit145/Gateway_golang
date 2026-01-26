@@ -8,9 +8,7 @@ curl -u myuser:mypassword
     -H "Content-Type: application/json"      
     -d '{"email": "user@example.com"}'
 
-
 curl http://localhost:8080/registration/confirm/sfdsdf
-
 
 go test ./internal/http-server/handler/registration -v
 go test ./internal/http-server/handler/confirm -v
