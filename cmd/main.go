@@ -29,6 +29,8 @@ func main() {
 		r.Get("/confirm/{token}", confirm.New(log))
 	})
 
+	// router.Get("/refresh")
+
 	srv := &http.Server{
 		Addr:         "localhost:8080",
 		Handler:      router,
