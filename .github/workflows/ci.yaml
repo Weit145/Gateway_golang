@@ -39,6 +39,7 @@ jobs:
         run: |
           go test ./internal/http-server/handler/registration -v
           go test ./internal/http-server/handler/confirm -v
+          go test ./internal/http-server/handler/refresh -v
 
       # - name: Run integration tests
       #   run: go test ./tests -v

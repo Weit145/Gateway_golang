@@ -18,6 +18,10 @@ type Request struct {
 type GRPCConfirmUser interface {
 }
 
+type Response struct {
+	TokenAsset string
+}
+
 func New(log *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "http-server.handler.confirm.New"
@@ -44,10 +48,16 @@ func New(log *slog.Logger) http.HandlerFunc {
 			Value:    "abc123",
 			Path:     "/", // доступна всему сайту
 			Expires:  time.Now().Add(24 * time.Hour),
-			HttpOnly: true,                  // защита от JS
-			Secure:   false,                 // только HTTPS
-			SameSite: http.SameSiteNoneMode, // защита от CSRF
+			HttpOnly: false,                // теперь можно видеть в браузере через JS
+			Secure:   false,                // локально без HTTPS
+			SameSite: http.SameSiteLaxMode, // Lax позволит отправлять cookie на GET запросы
 		})
+
+		var resp Response
+		resp.TokenAsset = "abc123"
+
+		w.Header().Set("Authorization", "Bearer "+resp.TokenAsset)
+		w.Header().Set("Access-Control-Expose-Headers", "Authorization")
 
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, response.Success())
