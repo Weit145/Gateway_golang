@@ -41,9 +41,21 @@ func TestConfirmHandler(t *testing.T) {
 			rr := httptest.NewRecorder()
 			r.ServeHTTP(rr, req)
 
+			cookies := rr.Result().Cookies()
+			require.NotEmpty(t, cookies)
+
+			var name string
+
+			for _, cookie := range cookies {
+				if cookie.Name == "refresh_token" {
+					name = cookie.Name
+					break
+				}
+			}
+			require.NotEqual(t, name, "")
+
 			var resp response.Response
 			require.NoError(t, json.Unmarshal(rr.Body.Bytes(), &resp))
-
 			require.Equal(t, tc.respError, resp.Status)
 		})
 	}

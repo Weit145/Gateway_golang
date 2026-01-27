@@ -3,6 +3,7 @@ package confirm
 import (
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/Weit145/GATEWAY_golang/internal/lib/response"
 	"github.com/go-chi/chi"
@@ -37,6 +38,16 @@ func New(log *slog.Logger) http.HandlerFunc {
 			render.JSON(w, r, response.Error("token is required"))
 			return
 		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "refresh_token",
+			Value:    "abc123",
+			Path:     "/", // доступна всему сайту
+			Expires:  time.Now().Add(24 * time.Hour),
+			HttpOnly: true,                  // защита от JS
+			Secure:   false,                 // только HTTPS
+			SameSite: http.SameSiteNoneMode, // защита от CSRF
+		})
 
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, response.Success())
