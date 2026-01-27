@@ -12,8 +12,10 @@ curl http://localhost:8080/registration/confirm/sfdsdf
 
 curl --cookie "refresh_token=abc123" http://localhost:8080/refresh
 
+curl -u myuser:mypassword -X POST http://localhost:8080/login 
 
 
 go test ./internal/http-server/handler/registration -v
 go test ./internal/http-server/handler/confirm -v
 go test ./internal/http-server/handler/refresh -v
+go test ./internal/http-server/handler/login -v

@@ -1,4 +1,4 @@
-package confirm_test
+package login_test
 
 import (
 	"encoding/json"
@@ -7,41 +7,64 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/confirm"
+	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/login"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/logger/slogdiscard"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/response"
-	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/require"
 )
 
-func TestConfirmHandler(t *testing.T) {
+func TestLoginHandler(t *testing.T) {
 	cases := []struct {
 		name      string
-		token     string
+		username  string
+		password  string
 		respError string
 		mockError error
 	}{
 		{
+			name:      "Missing username",
+			username:  "",
+			password:  "123123",
+			respError: "error",
+		},
+		{
+			name:      "Missing password",
+			username:  "Weit",
+			password:  "",
+			respError: "error",
+		},
+		{
+			name:      "Invalid username",
+			username:  "12",
+			password:  "123123",
+			respError: "error",
+		},
+		{
+			name:      "Invalid password",
+			username:  "Weit",
+			password:  "12",
+			respError: "error",
+		},
+		{
 			name:      "Success",
-			token:     "1231241231",
+			username:  "Weit",
+			password:  "123123",
 			respError: "success",
 		},
 	}
-
 	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			handler := confirm.New(slogdiscard.NewDiscardLogger())
+			handler := login.New(slogdiscard.NewDiscardLogger())
 
-			req := httptest.NewRequest(http.MethodGet, "/registration/confirm/"+tc.token, nil)
+			req := httptest.NewRequest(http.MethodPost, "/login", nil)
 
-			r := chi.NewRouter()
-			r.Get("/registration/confirm/{token}", handler) // маршрут с параметром
+			req.SetBasicAuth(tc.username, tc.password)
+
 			rr := httptest.NewRecorder()
-			r.ServeHTTP(rr, req)
-
+			handler.ServeHTTP(rr, req)
 			if tc.respError != "error" {
 				cookies := rr.Result().Cookies()
 				require.NotEmpty(t, cookies)
@@ -60,6 +83,7 @@ func TestConfirmHandler(t *testing.T) {
 				require.True(t, strings.HasPrefix(assetToken, "Bearer "))
 			}
 			var resp response.Response
+
 			require.NoError(t, json.Unmarshal(rr.Body.Bytes(), &resp))
 			require.Equal(t, tc.respError, resp.Status)
 		})
