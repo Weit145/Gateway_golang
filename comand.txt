@@ -16,3 +16,4 @@ curl --cookie "refresh_token=abc123" http://localhost:8080/refresh
 
 go test ./internal/http-server/handler/registration -v
 go test ./internal/http-server/handler/confirm -v
+go test ./internal/http-server/handler/refresh -v

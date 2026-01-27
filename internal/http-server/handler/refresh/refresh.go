@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/Weit145/GATEWAY_golang/internal/lib/logger"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/response"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
@@ -34,14 +33,14 @@ func New(log *slog.Logger) http.HandlerFunc {
 
 		cookie, err := r.Cookie("refresh_token")
 		if err != nil {
-			log.Error("Failed cookie", logger.Err(err))
+			log.Error("Failed cookie")
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, response.Error("Failed cookie"))
 			return
 		}
 
 		if cookie.Value == "" {
-			log.Error("Failed cookie value", logger.Err(err))
+			log.Error("Failed cookie value")
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, response.Error("Failed cookie value"))
 			return
