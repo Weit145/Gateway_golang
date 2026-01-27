@@ -9,6 +9,7 @@ import (
 	"github.com/Weit145/GATEWAY_golang/internal/config"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/confirm"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/login"
+	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/logout"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/refresh"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/registration"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/logger"
@@ -37,6 +38,7 @@ func main() {
 
 	router.Get("/refresh", refresh.New(log))
 	router.Post("/login", login.New(log))
+	router.Get("/logout", logout.New(log))
 
 	srv := &http.Server{
 		Addr:         "localhost:8080",
