@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/confirm"
@@ -53,6 +54,9 @@ func TestConfirmHandler(t *testing.T) {
 				}
 			}
 			require.NotEqual(t, name, "")
+
+			assetToken := rr.Result().Header.Get("Authorization")
+			require.True(t, strings.HasPrefix(assetToken, "Bearer "))
 
 			var resp response.Response
 			require.NoError(t, json.Unmarshal(rr.Body.Bytes(), &resp))

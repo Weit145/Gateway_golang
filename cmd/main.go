@@ -8,6 +8,7 @@ import (
 
 	"github.com/Weit145/GATEWAY_golang/internal/config"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/confirm"
+	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/refresh"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/registration"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/logger"
 	"github.com/go-chi/chi"
@@ -29,7 +30,7 @@ func main() {
 		r.Get("/confirm/{token}", confirm.New(log))
 	})
 
-	// router.Get("/refresh")
+	router.Get("/refresh", refresh.New(log))
 
 	srv := &http.Server{
 		Addr:         "localhost:8080",
