@@ -1,10 +1,13 @@
 package registration
 
 import (
+	"context"
 	"errors"
 	"io"
 	"log/slog"
 	"net/http"
+
+	grpc "github.com/Weit145/proto-repo/auth"
 
 	"github.com/Weit145/GATEWAY_golang/internal/lib/logger"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/response"
@@ -15,12 +18,15 @@ import (
 
 type Request struct {
 	Email string `json:"email" validate:"required,email"`
+	Login string `json:"login" validate:"required,min=4"`
 }
 
+//go:generate go run github.com/vektra/mockery/v2@v2.53.5 --name=GRPCRegistrationUser
 type GRPCRegistrationUser interface {
+	CreateUser(ctx context.Context, login, email, password, username string) (*grpc.Okey, error)
 }
 
-func New(log *slog.Logger) http.HandlerFunc {
+func New(log *slog.Logger, grpcRegistration GRPCRegistrationUser) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "http-server.handler.registration.New"
 
@@ -68,6 +74,16 @@ func New(log *slog.Logger) http.HandlerFunc {
 			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, response.Error(
 				"validation error: "+err.Error(),
+			))
+			return
+		}
+
+		_, err = grpcRegistration.CreateUser(r.Context(), req.Login, req.Email, password, username)
+		if err != nil {
+			log.Error("Failed create user", logger.Err(err))
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, response.Error(
+				"Failed create user",
 			))
 			return
 		}
