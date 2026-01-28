@@ -3,15 +3,15 @@ package auth
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	GRPCauth "github.com/Weit145/proto-repo/auth"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Client struct {
-	api GRPCauth.AuthClient
-	log *slog.Logger
+	api  GRPCauth.AuthClient
+	conn *grpc.ClientConn
 }
 
 type AuthService interface {
@@ -23,22 +23,28 @@ type AuthService interface {
 	LogOutUser(ctx context.Context, token string) error
 }
 
-func New(
-	ctx context.Context,
-	addr string,
-) (*Client, error) {
+func New(addr string) (*Client, error) {
 	const op = "grpc.New"
 
-	cc, err := grpc.DialContext(ctx, addr, grpc.WithInsecure())
+	conn, err := grpc.NewClient(addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	grpcClient := GRPCauth.NewAuthClient(cc)
+	grpcClient := GRPCauth.NewAuthClient(conn)
 
 	return &Client{
-		api: grpcClient,
+		api:  grpcClient,
+		conn: conn,
 	}, nil
+}
+
+func (c *Client) Close() error {
+	if c.conn != nil {
+		return c.conn.Close()
+	}
+	return nil
 }
 
 func (c *Client) CreateUser(ctx context.Context, login string, email string, password string, username string) (*GRPCauth.Okey, error) {
