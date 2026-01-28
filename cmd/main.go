@@ -42,7 +42,7 @@ func main() {
 
 	router.Route("/registration", func(r chi.Router) {
 		r.Post("/", registration.New(log, client))
-		r.Get("/confirm/{token}", confirm.New(log))
+		r.Get("/confirm/{token}", confirm.New(log, client))
 	})
 
 	router.Get("/refresh", refresh.New(log))
