@@ -1,14 +1,14 @@
 module github.com/Weit145/GATEWAY_golang
 
-go 1.25
+go 1.25.5
 
 require (
-	github.com/Weit145/proto-repo v0.0.0-20260128103038-a67edb6c5537
+	github.com/Weit145/proto-repo v0.0.0-20260128122721-c0fab7020b74
 	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/render v1.0.3
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.78.0
 )
 
@@ -22,7 +22,7 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
@@ -32,5 +32,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )
-
-replace github.com/Weit145/proto-repo => ../microservices_site/proto
