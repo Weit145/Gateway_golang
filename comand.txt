@@ -3,10 +3,11 @@ go generate ./...
 go mod tidy
 
 
-curl -u myuser:mypassword\      
-    -X POST http://localhost:8080/registration\     
-    -H "Content-Type: application/json"\      
-    -d '{"email": "user@example.com"}'
+curl -u myuser:mypassword \
+  -X POST http://localhost:8080/registration \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "login": "weit145"}'
+
 
 curl http://localhost:8080/registration/confirm/sfdsdf
 
@@ -23,3 +24,10 @@ go test ./internal/http-server/handler/confirm -v
 go test ./internal/http-server/handler/refresh -v
 go test ./internal/http-server/handler/login -v
 go test ./internal/http-server/handler/logout -v
+
+
+go test ./internal/http-server/handler/registration 
+go test ./internal/http-server/handler/confirm 
+go test ./internal/http-server/handler/refresh 
+go test ./internal/http-server/handler/login 
+go test ./internal/http-server/handler/logout 

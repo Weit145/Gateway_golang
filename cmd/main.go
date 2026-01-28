@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/Weit145/GATEWAY_golang/internal/config"
+	"github.com/Weit145/GATEWAY_golang/internal/grpc/auth"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/confirm"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/login"
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/logout"
@@ -25,6 +27,13 @@ func main() {
 	log := setupLogger(cfg.Env)
 	log.Info("Start GATEWAY")
 
+	//Init grpc client
+
+	ctx := context.Background()
+	client, err := auth.New(ctx, "auth-service:50051")
+	if err != nil {
+		log.Error("failed to create auth client:", err)
+	}
 	//Init router
 	router := chi.NewRouter()
 
@@ -32,7 +41,7 @@ func main() {
 	router.Use(middleware.Recoverer)
 
 	router.Route("/registration", func(r chi.Router) {
-		r.Post("/", registration.New(log))
+		r.Post("/", registration.New(log, client))
 		r.Get("/confirm/{token}", confirm.New(log))
 	})
 
