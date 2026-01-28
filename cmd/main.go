@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"os"
@@ -29,8 +28,7 @@ func main() {
 
 	//Init grpc client
 
-	ctx := context.Background()
-	client, err := auth.New(ctx, "auth-service:50051")
+	client, err := auth.New("auth-service:50051")
 	if err != nil {
 		log.Error("failed to create auth client:", err)
 	}
