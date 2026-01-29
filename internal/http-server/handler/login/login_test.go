@@ -2,54 +2,87 @@ package login_test
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	grpc "github.com/Weit145/proto-repo/auth"
+
 	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/login"
+	"github.com/Weit145/GATEWAY_golang/internal/http-server/handler/login/mocks"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/logger/slogdiscard"
 	"github.com/Weit145/GATEWAY_golang/internal/lib/response"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
 func TestLoginHandler(t *testing.T) {
+	CookieResponse := &grpc.CookieResponse{
+		AccessToken: "123123",
+		Cookie: &grpc.Cookie{
+			Key:      "refresh_token",
+			Value:    "123123",
+			Httponly: false,
+			Secure:   false,
+			Samesite: "lax",
+			MaxAge:   24,
+		},
+	}
 	cases := []struct {
-		name      string
-		username  string
-		password  string
-		respError string
-		mockError error
+		name       string
+		username   string
+		password   string
+		respError  string
+		mockError  error
+		mockResult *grpc.CookieResponse
+		shouldCall bool
 	}{
 		{
-			name:      "Missing username",
-			username:  "",
-			password:  "123123",
-			respError: "error",
+			name:       "Missing username",
+			username:   "",
+			password:   "123123",
+			respError:  "error",
+			shouldCall: false,
 		},
 		{
-			name:      "Missing password",
-			username:  "Weit",
-			password:  "",
-			respError: "error",
+			name:       "Missing password",
+			username:   "Weit",
+			password:   "",
+			respError:  "error",
+			shouldCall: false,
 		},
 		{
-			name:      "Invalid username",
-			username:  "12",
-			password:  "123123",
-			respError: "error",
+			name:       "Invalid username",
+			username:   "12",
+			password:   "123123",
+			respError:  "error",
+			shouldCall: false,
 		},
 		{
-			name:      "Invalid password",
-			username:  "Weit",
-			password:  "12",
-			respError: "error",
+			name:       "Invalid password",
+			username:   "Weit",
+			password:   "12",
+			respError:  "error",
+			shouldCall: false,
 		},
 		{
-			name:      "Success",
-			username:  "Weit",
-			password:  "123123",
-			respError: "success",
+			name:       "Error mocks",
+			username:   "Weit",
+			password:   "123123",
+			respError:  "error",
+			mockResult: CookieResponse,
+			mockError:  errors.New("Faeld login"),
+			shouldCall: true,
+		},
+		{
+			name:       "Success",
+			username:   "Weit",
+			password:   "123123",
+			respError:  "success",
+			mockResult: CookieResponse,
+			shouldCall: true,
 		},
 	}
 	for _, tc := range cases {
@@ -57,7 +90,15 @@ func TestLoginHandler(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			handler := login.New(slogdiscard.NewDiscardLogger())
+			mocksAuthenticate := mocks.NewGRPCLoginUser(t)
+
+			if tc.shouldCall {
+				mocksAuthenticate.On("Authenticate", mock.Anything, tc.username, tc.password).
+					Return(tc.mockResult, tc.mockError).
+					Once()
+			}
+
+			handler := login.New(slogdiscard.NewDiscardLogger(), mocksAuthenticate)
 
 			req := httptest.NewRequest(http.MethodPost, "/login", nil)
 
