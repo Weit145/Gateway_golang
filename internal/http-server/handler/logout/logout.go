@@ -1,6 +1,7 @@
 package logout
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -14,10 +15,12 @@ type Request struct {
 	TokenAsset string
 }
 
+//go:generate go run github.com/vektra/mockery/v2@v2.53.5 --name=GRPCLogOutUser
 type GRPCLogOutUser interface {
+	LogOutUser(ctx context.Context, token string) error
 }
 
-func New(log *slog.Logger) http.HandlerFunc {
+func New(log *slog.Logger, grpcLogoutUser GRPCLogOutUser) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "http-server.handler.logout.New"
 
@@ -36,16 +39,27 @@ func New(log *slog.Logger) http.HandlerFunc {
 			))
 			return
 		}
+
+		err := grpcLogoutUser.LogOutUser(r.Context(), req.TokenAsset)
+		if err != nil {
+			log.Error("Failed logout")
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, response.Error(
+				"Failed logout",
+			))
+			return
+		}
+
 		token := strings.TrimPrefix(req.TokenAsset, "Bearer ")
 		token = strings.TrimSpace(token)
 
 		http.SetCookie(w, &http.Cookie{
-			Name:     "refresh_token", // та же кука, которую нужно удалить
-			Value:    "",              // очищаем значение
-			Path:     "/",             // путь должен совпадать с кукой, чтобы браузер её удалил
-			MaxAge:   -1,              // говорит браузеру удалить куку сразу
-			HttpOnly: true,            // как было, можно оставить true
-			Secure:   false,           // для локальной разработки
+			Name:     "refresh_token",
+			Value:    "",
+			Path:     "/",
+			MaxAge:   -1,
+			HttpOnly: true,
+			Secure:   false,
 			SameSite: http.SameSiteLaxMode,
 		})
 
