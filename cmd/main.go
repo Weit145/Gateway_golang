@@ -43,8 +43,8 @@ func main() {
 		r.Get("/confirm/{token}", confirm.New(log, client))
 	})
 
-	router.Get("/refresh", refresh.New(log))
-	router.Post("/login", login.New(log))
+	router.Get("/refresh", refresh.New(log, client))
+	router.Post("/login", login.New(log, client))
 	router.Get("/logout", logout.New(log))
 
 	srv := &http.Server{
