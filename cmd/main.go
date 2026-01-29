@@ -45,7 +45,7 @@ func main() {
 
 	router.Get("/refresh", refresh.New(log, client))
 	router.Post("/login", login.New(log, client))
-	router.Get("/logout", logout.New(log))
+	router.Get("/logout", logout.New(log, client))
 
 	srv := &http.Server{
 		Addr:         "localhost:8080",
