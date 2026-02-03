@@ -28,10 +28,12 @@ func main() {
 
 	//Init grpc client
 
-	client, err := auth.New("auth-service:50051")
+	client, err := auth.New("localhost:50051")
 	if err != nil {
-		log.Error("failed to create auth client:", err)
+		log.Error("failed to create auth client:", logger.Err(err))
+		os.Exit(1)
 	}
+	log.Info("Start client")
 	//Init router
 	router := chi.NewRouter()
 

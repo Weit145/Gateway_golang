@@ -8,6 +8,7 @@ curl -u myuser:mypassword \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com", "login": "weit145"}'
 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE3NzAxMjY1MDB9.h9PNhh6kPOc8XCrFYbkLQKGIvUdP6bVwr3GEHXK6fnQ
 
 curl http://localhost:8080/registration/confirm/sfdsdf
 
