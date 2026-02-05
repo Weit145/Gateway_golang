@@ -28,7 +28,12 @@ func main() {
 
 	//Init grpc client
 
-	client, err := auth.New("localhost:50051")
+	grpcAddress := os.Getenv("AUTH_GRPC_ADDR")
+	if grpcAddress == "" {
+		grpcAddress = "localhost:50051"
+	}
+
+	client, err := auth.New(grpcAddress)
 	if err != nil {
 		log.Error("failed to create auth client:", logger.Err(err))
 		os.Exit(1)

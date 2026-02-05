@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Сборка бинарника
-RUN go build -ldflags="-s -w" -o app ./cmd/app/main.go
+RUN go build -ldflags="-s -w" -o app ./cmd/main.go
 
 # ---------- Stage 2: Runtime ----------
 FROM alpine:latest
