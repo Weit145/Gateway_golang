@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
+
 
 	"github.com/Weit145/GATEWAY_golang/internal/config"
 	"github.com/Weit145/GATEWAY_golang/internal/grpc/auth"
@@ -55,11 +55,11 @@ func main() {
 	router.Get("/logout", logout.New(log, client))
 
 	srv := &http.Server{
-		Addr:         "localhost:8080",
+		Addr:         cfg.HTTPServer.Address,
 		Handler:      router,
-		ReadTimeout:  4 * time.Second,
-		WriteTimeout: 4 * time.Second,
-		IdleTimeout:  30 * time.Second,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
