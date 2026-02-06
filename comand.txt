@@ -3,10 +3,10 @@ go generate ./...
 go mod tidy
 
 
-curl -u myuser:mypassword \
+curl -u weit:123123 \
   -X POST http://localhost:8080/registration \
   -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "login": "weit145"}'
+  -d '{"email": "kloader145@gmail.com", "login": "weit"}'
 
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE3NzAxMjY1MDB9.h9PNhh6kPOc8XCrFYbkLQKGIvUdP6bVwr3GEHXK6fnQ
 
